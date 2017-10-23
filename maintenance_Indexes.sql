@@ -1,5 +1,4 @@
 ﻿IF OBJECT_ID('dbo.usp_ReIndex') IS NOT NULL
-  SET NOEXEC ON
 GO
 CREATE PROCEDURE dbo.usp_ReIndex(@dbName nvarchar(128))
 AS RETURN
