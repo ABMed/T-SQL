@@ -1,7 +1,7 @@
-﻿IF OBJECT_ID('dbo.usp_IndexMaintenance') IS NOT NULL
+﻿IF OBJECT_ID('dbo.usp_ReIndex') IS NOT NULL
   SET NOEXEC ON
 GO
-CREATE PROCEDURE dbo.usp_IndexMaintenance(@dbName nvarchar(128))
+CREATE PROCEDURE dbo.usp_ReIndex(@dbName nvarchar(128))
 AS RETURN
 BEGIN
     SET NOCOUNT ON;
@@ -39,8 +39,7 @@ INSERT INTO @indexList (indexName, tableName, defragmentationAction)
     I.Name AS indexName,
     @dbName + '.' + SCHEMA_NAME(O.schema_id) + '.' + OBJECT_NAME(DDIPS.object_id) AS tableName,
     CASE
-      WHEN DDIPS.avg_fragmentation_in_percent > 5.0 AND
-        DDIPS.avg_fragmentation_in_percent <= 30.0 THEN 'REORGANIZE'
+      WHEN DDIPS.avg_fragmentation_in_percent <= 30.0 THEN 'REORGANIZE'
       WHEN DDIPS.avg_fragmentation_in_percent > 30.0 THEN 'REBUILD'
     END AS defragmentationAction
   FROM sys.dm_db_index_physical_stats(DB_ID(@dbName), NULL, NULL, NULL, NULL) AS DDIPS
@@ -95,8 +94,7 @@ END
 CLOSE indexListCursor;
 DEALLOCATE indexListCursor;
   
-
+SET NOEXEC OFF;
     RETURN 0;
 END;
 GO
-    SET NOEXEC OFF
